@@ -34,5 +34,22 @@ def upload_file():
 
     return jsonify({"message": "Failed to upload file"}), 500
 
+@app.route('/generate-qa', methods=['POST'])
+def generate_qa():
+    """Handles Q&A generation for a given skill."""
+    data = request.get_json()
+    if not data or 'skill' not in data:
+        return jsonify({"message": "Skill not provided"}), 400
+
+    skill = data['skill']
+    try:
+        # Call the RAG processing function
+        from rag import process_topic
+        result = process_topic(skill)
+
+        return jsonify({"message": "Q&A generated successfully!", "qa": result}), 200
+    except Exception as e:
+        return jsonify({"message": f"Failed to generate Q&A: {str(e)}"}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
