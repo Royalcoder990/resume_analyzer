@@ -1,50 +1,65 @@
-// src/components/ChatContainer.js
-import React, { useState } from 'react';
-import MessageDisplay from './MessageDisplay';
-import InputBox from './InputBox';
+import React, { useState } from "react";
+import MessageDisplay from "./MessageDisplay";
+import InputBox from "./InputBox";
+import axios from "axios";
 
 function ChatContainer() {
   const [messages, setMessages] = useState([]);
 
+  // Handles sending user messages
   const handleSendMessage = (input) => {
     if (input.trim()) {
-      const userMessage = { text: input, sender: 'user' };
-      setMessages([...messages, userMessage]);
+      const userMessage = { text: input, sender: "user" };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
       generateResponse(input);
     }
   };
 
-  const handleSendFile = (file) => {
-    const fileMessage = { file, sender: 'user' };
-    setMessages((prevMessages) => [...prevMessages, fileMessage]);
-    // Add logic to send file to backend if needed
+  // Handles sending file to the server and processing response
+  const handleSendFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      // Ensure response contains `entities` array
+      if (response.data?.entities?.length) {
+        const entities = response.data.entities;
+        const botMessage = {
+          text: `Extracted Skills: ${entities.map((e) => e.text).join(", ")}`,
+          sender: "bot",
+        };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+      } else {
+        throw new Error("No entities found in response.");
+      }
+    } catch (error) {
+      const botMessage = { text: "Failed to process the file.", sender: "bot" };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+    }
   };
 
+  // Generates a bot response
   const generateResponse = (userInput) => {
-    const botMessage = { text: `Bot response to: "${userInput}"`, sender: 'bot' };
+    const botMessage = { text: `Bot response to: "${userInput}"`, sender: "bot" };
     setMessages((prevMessages) => [...prevMessages, botMessage]);
   };
 
   return (
-    <div className="flex justify-center items-center justify-center w-full h-full bg-gray-100">
+    <div className="flex justify-center items-center w-full h-full bg-gray-100">
       <div className="w-full m-5 max-w-5xl h-[80vh] border rounded-lg shadow-md overflow-hidden">
-        
-        {/* Top section - White background, 20% height, including attachment and send box */}
+        {/* Top section: Input box */}
         <div className="h-[17%] bg-white p-4 flex items-center justify-center">
           <InputBox onSendMessage={handleSendMessage} onSendFile={handleSendFile} />
         </div>
-        
-        {/* Bottom section - Gray background, 80% height, for messages display */}
-        <div className="h-[80%] bg-gray-200 p-4 overflow-auto flex items-center space-x-2 justify-center">
-  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">JAVA</button>
-  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">C++</button>
-  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">C</button>
-  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">PYTHON</button>
-  
-  <MessageDisplay messages={messages} />
-</div>
 
-        
+        {/* Bottom section: Message display */}
+        <div className="h-[80%] bg-gray-200 p-4 overflow-auto">
+          <MessageDisplay messages={messages} />
+        </div>
       </div>
     </div>
   );

@@ -2,46 +2,35 @@ import React, { useState } from 'react';
 
 function InputBox({ onSendMessage, onSendFile }) {
   const [input, setInput] = useState('');
-  const [file, setFile] = useState(null);
 
   const handleSend = () => {
-    if (input.trim()) {
-      onSendMessage(input);
-      setInput('');
-    }
-    if (file) {
-      onSendFile(file);
-      setFile(null);
-    }
+    onSendMessage(input);
+    setInput('');
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      onSendFile(file);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center p-3 border-t space-x-2">
-      
+    <div className="flex space-x-2">
       <input
-        type="file"
-        onChange={handleFileChange}
-        className="hidden"
-        id="file-upload"
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Type your message..."
+        className="border rounded px-2 py-1 flex-grow"
       />
-      <label
-        htmlFor="file-upload"
-        className="p-2 bg-white-200 rounded-xl cursor-pointer hover:bg-gray-300"
-        style={{ fontSize: '1.8rem', padding: '0.5rem' }}
-      >
-        📎
-      </label>
-      <button
-        onClick={handleSend}
-        className="p-2 bg-blue-600 text-white margin-left rounded-lg hover:bg-blue-700 transition"
-        style={{ fontSize: '1.3rem', padding: '0.5rem' }}
-      >
+      <button onClick={handleSend} className="bg-blue-500 text-white px-4 py-2 rounded">
         Send
       </button>
+      <input type="file" onChange={handleFileChange} className="hidden" id="fileInput" />
+      <label htmlFor="fileInput" className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer">
+        Upload File
+      </label>
     </div>
   );
 }
