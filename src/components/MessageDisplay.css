@@ -1,0 +1,40 @@
+.message {
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 80%;
+  }
+  
+  .message.bot {
+    background-color: #f1f1f1;
+    align-self: flex-start;
+  }
+  
+  .message.user {
+    background-color: #0078d4;
+    color: #fff;
+    align-self: flex-end;
+  }
+  
+  .qa-container {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .qa-item {
+    margin-bottom: 10px;
+  }
+  
+  .subtopic {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .answer {
+    margin: 0;
+    color: #555;
+  }

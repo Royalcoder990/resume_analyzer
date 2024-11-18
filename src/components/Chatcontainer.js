@@ -18,23 +18,25 @@ function ChatContainer() {
 
     // Handles sending file to the server and processing response
     const handleSendFile = async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-
-            if (response.data?.entities?.length) {
-                setSkills(response.data.entities.map((e) => e.text)); // Extract skill text
-            } else {
-                throw new Error("No entities found in response.");
-            }
-        } catch (error) {
-            setMessages((prevMessages) => [...prevMessages, { text: "Failed to process the file.", sender: "bot" }]);
-        }
-    };
+      const formData = new FormData();
+      formData.append("file", file);
+  
+      try {
+          const response = await axios.post("http://127.0.0.1:5000/upload", formData, {
+              headers: { "Content-Type": "multipart/form-data" },
+          });
+          console.log(response);
+          
+          // Directly set the skills array without needing map
+          if (response.data?.entities?.length) {
+              setSkills(response.data.entities); // Just set the array of skills
+          } else {
+              throw new Error("No entities found in response.");
+          }
+      } catch (error) {
+          setMessages((prevMessages) => [...prevMessages, { text: "Failed to process the file.", sender: "bot" }]);
+      }
+  };
 
     // Handles skill button click
     const handleSkillClick = async (skill) => {
