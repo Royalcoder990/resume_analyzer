@@ -39,26 +39,42 @@ function ChatContainer() {
   };
 
     // Handles skill button click
-    const handleSkillClick = async (skill) => {
-        const botMessage = { text: `Generating Q&A for skill: ${skill}`, sender: "bot" };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
+    // Handles skill button click
+const handleSkillClick = async (skill) => {
+  const botMessage = { text: `Generating Q&A for skill: ${skill}`, sender: "bot" };
+  setMessages((prevMessages) => [...prevMessages, botMessage]);
 
-        try {
-            const response = await axios.post("http://127.0.0.1:5000/generate-qa", { skill });
+  try {
+      const response = await axios.post("http://127.0.0.1:5000/generate-qa", { skill });
 
-            if (response.data?.qa) {
-                const qaMessage = {
-                    text: `Q&A for ${skill}: ${JSON.stringify(response.data.qa, null, 2)}`,
-                    sender: "bot",
-                };
-                setMessages((prevMessages) => [...prevMessages, qaMessage]);
-            } else {
-                throw new Error("No Q&A generated.");
-            }
-        } catch (error) {
-            setMessages((prevMessages) => [...prevMessages, { text: "Failed to generate Q&A.", sender: "bot" }]);
-        }
-    };
+      if (response.data?.qa) {
+          // Process and format Q&A response
+          const qaData = response.data.qa;
+
+          // Iterate over subtopics and add messages
+          for (const [subtopic, qaContent] of Object.entries(qaData)) {
+              // Add the subtopic message
+              setMessages((prevMessages) => [
+                  ...prevMessages,
+                  { text: `Subtopic: ${subtopic}`, sender: "bot" },
+              ]);
+
+              // Add the Q&A content for the subtopic
+              setMessages((prevMessages) => [
+                  ...prevMessages,
+                  { text: `Q&A:\n${qaContent}`, sender: "bot" },
+              ]);
+          }
+      } else {
+          throw new Error("No Q&A generated.");
+      }
+  } catch (error) {
+      setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: `Failed to generate Q&A for skill: ${skill}`, sender: "bot" },
+      ]);
+  }
+};
 
     // Generates a bot response
     const generateResponse = (userInput) => {
@@ -75,20 +91,20 @@ function ChatContainer() {
                 </div>
 
                 {/* Skills section */}
-                <div className="h-[10%] bg-gray-300 p-4 flex gap-2 overflow-x-auto">
-                    {skills.map((skill, index) => (
-                        <button
-                            key={index}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
-                            onClick={() => handleSkillClick(skill)}
-                        >
-                            {skill}
-                        </button>
-                    ))}
+                <div className="h-[15%] bg-gray-300 p-4 flex gap-2 overflow-x-auto">
+                  {skills.map((skill, index) => (
+                    <button
+                      key={index}
+                      className="h-12 w-32 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200 flex items-center justify-center"
+                      onClick={() => handleSkillClick(skill)}
+                    >
+                      {skill}
+                    </button>
+                  ))}
                 </div>
 
                 {/* Bottom section: Message display */}
-                <div className="h-[60%] bg-gray-200 p-4 overflow-auto">
+                <div className="h-[70%] bg-gray-200 p-4 overflow-auto">
                     <MessageDisplay messages={messages} />
                 </div>
             </div>

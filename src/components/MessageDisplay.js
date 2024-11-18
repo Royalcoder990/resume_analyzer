@@ -5,7 +5,7 @@ function MessageDisplay({ messages }) {
     <div className="space-y-4">
       {messages.map((message, index) => {
         if (message.sender === "bot" && typeof message.text === "object") {
-          // If the bot's message is a Q&A dictionary, display it in a better format
+          // Handle Q&A dictionaries
           return (
             <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-800">Q&A:</h2>
@@ -17,9 +17,11 @@ function MessageDisplay({ messages }) {
                   <div className="mt-2 space-y-2">
                     {content.split("\n\n").map((qa, qaIdx) => (
                       <div key={qaIdx} className="bg-white p-3 rounded-md shadow">
+                        {/* Replace \n with <br /> */}
                         {qa.split("\n").map((line, lineIdx) => (
                           <p key={lineIdx} className="text-gray-700">
                             {line}
+                            <br />
                           </p>
                         ))}
                       </div>
@@ -31,7 +33,7 @@ function MessageDisplay({ messages }) {
           );
         }
 
-        // Regular text messages
+        // Render regular bot and user messages
         return (
           <div
             key={index}
@@ -39,7 +41,14 @@ function MessageDisplay({ messages }) {
               message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-800"
             }`}
           >
-            {message.text}
+            {message.text
+              .split("\n")
+              .map((line, lineIdx) => (
+                <React.Fragment key={lineIdx}>
+                  {line}
+                  <br />
+                </React.Fragment>
+              ))}
           </div>
         );
       })}

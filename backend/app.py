@@ -46,7 +46,7 @@ def generate_qa():
         # Call the RAG processing function
         from rag import process_topic
         result = process_topic(skill)
-
+        print(type(result))
         return jsonify({"message": "Q&A generated successfully!", "qa": result}), 200
     except Exception as e:
         return jsonify({"message": f"Failed to generate Q&A: {str(e)}"}), 500
