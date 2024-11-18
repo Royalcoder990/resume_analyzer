@@ -10,14 +10,14 @@ load_dotenv()
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # Load Chroma vectorstore
-persist_directory = "/Users/rishabhralli/Documents/JIIT/Major1/implementation/vectorstore"
+persist_directory = "/Users/rishabhralli/Documents/JIIT/Major1/implementation/newvectorstore"
 retrieved_vectorstore = Chroma(
     persist_directory=persist_directory, 
     embedding_function=embeddings
 )
 
 # Set up retriever
-retriever = retrieved_vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 10})
+retriever = retrieved_vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 20})
 
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -27,9 +27,9 @@ from langchain_core.prompts import ChatPromptTemplate
 system_prompt = (
     "You are an assistant for question-answering tasks."
     "Use the following pieces of retrieved context. If the entered topic does not qualify as a skill or"
-    "even if it is a skill and does not pertain to the information in the document, then just say the word ERROR."
+    "even if it is a skill and the information fetched from the retrieved documents is not at all relevant, then just say the word ERROR."
     "else you may generate five questions and their answers using the following format, first a question is generated then followed by its answer."
-    "You may write Q: before every question and A: before every answer. And please try to avoid using ** or any special character to represent or highlight."
+    "You may write Q: before every question and A: before every answer.After every question and every answer please leave a line. And please try to avoid using ** or any special character to represent or highlight."
     "Make the answers atleast 50 words long."
     "\n\n"
     "{context}"
@@ -73,7 +73,7 @@ def process_topic(topic):
         # Add to result only if the response is not "ERROR"
         if response["answer"].strip().upper() != "ERROR":
             result[subtopic] = response["answer"]
-            print(subtopic)
-            print(response["answer"])
-    
+            # print(subtopic)
+            # print(response["answer"])
+    print(result)
     return result

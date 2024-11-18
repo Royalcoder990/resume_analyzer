@@ -6,7 +6,8 @@ from rapidfuzz import fuzz, process
 predefined_categories = [
     "Java", "Python", "Machine Learning", "Deep Learning", 
     "Natural Language Processing", "JavaScript", "React", 
-    "SQL", "NoSQL", "Big Data", "Hadoop", "Spark", "TensorFlow"
+    "SQL", "NoSQL", "Big Data", "Hadoop", "Spark", "TensorFlow",
+    "Deep Learning","Machine Learning","C","C++","Object Oriented Programming",
 ]
 
 from fuzzywuzzy import fuzz, process
