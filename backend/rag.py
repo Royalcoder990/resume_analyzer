@@ -77,7 +77,3 @@ def process_topic(topic):
             print(response["answer"])
     
     return result
-
-# Example usage
-topic = "Git"
-output = process_topic(topic)
