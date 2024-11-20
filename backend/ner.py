@@ -4,10 +4,12 @@ import PyPDF2
 from rapidfuzz import fuzz, process
 
 predefined_categories = [
-    "Java", "Python", "Machine Learning", "Deep Learning", 
+    "Java", "Python", "Machine Learning", 
     "Natural Language Processing", "JavaScript", "React", 
     "SQL", "NoSQL", "Big Data", "Hadoop", "Spark", "TensorFlow",
-    "Deep Learning","Machine Learning","C","C++","Object Oriented Programming",
+    "Machine Learning","C","C++","CPP","Object Oriented Programming",
+    "MySQL","Scikit-Learn","HTML","CSS","Data Science","Git","GitHub","MySQL","Matplotlib","Software Engineering",
+    "Linux","MongoDB","OOPs","Software Testing"
 ]
 
 from fuzzywuzzy import fuzz, process
@@ -50,34 +52,31 @@ def match_skills(extracted_skills, predefined_categories, threshold=80):
             matched_skills.append(None)
             continue
 
-        if score >= threshold:  # Only accept matches above the threshold
-            matched_skills.append(best_match)  # Add the match to the list
+        if score >= threshold: 
+            matched_skills.append(best_match) 
         else:
-            matched_skills.append(None)  # Add None if no suitable match found
+            matched_skills.append(None)  
     
     print("Matched Skills:", matched_skills)
     return matched_skills
 
-# Load the trained model
 model_path = "/Users/rishabhralli/Documents/JIIT/Major1/implementation/ltrain_store"
 nlp = spacy.load(model_path)
 
 def extract_skills_from_pdf(pdf_path):
     """Extracts skills/entities from a PDF using a trained NER model."""
-    # Extract text from PDF
+
     with open(pdf_path, "rb") as file:
         reader = PyPDF2.PdfReader(file)
         text = ""
         for page in reader.pages:
             text += page.extract_text() + "\n"
 
-    # Process the text with the NER model
+ 
     doc = nlp(text)
     skills = [{"text": ent.text, "label": ent.label_} for ent in doc.ents]
     matched_skills = match_skills(skills, predefined_categories)
-    # Assuming matched_skills has been populated
     matched_skills = list(set([skill for skill in matched_skills if skill is not None]))
 
-# Now matched_skills will only have unique values with no None values
     print(matched_skills)
     return matched_skills
